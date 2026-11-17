@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>在途 · 汽车交互作品库</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="content.js"></script>
+<script defer src="app.js"></script>
+</head>
+<body>
+<header class="top shell">
+  <a class="wordmark" href="#"><span class="mark">⇢</span><span>在途 <small>IN MOTION</small></span></a>
+  <nav aria-label="主导航"><a href="#featured">精选</a><a href="#archive">全部作品 <span>↘</span></a></nav>
+</header>
+<main>
+  <section id="featured" class="hero shell" aria-labelledby="hero-title">
+    <div class="intro">
+      <p class="eyebrow"><i></i> AUTOMOTIVE INTERACTION</p>
+      <h1 id="hero-title">汽车交互<br><span>作品库</span></h1>
+      <p class="intro-copy">记录座舱里的交互设计。从一次提示和一个手势，到可以走进去的声音记忆。</p>
+      <a class="pill primary" href="#archive">浏览作品 <span>↓</span></a>
+    </div>
+    <div class="corridor">
+      <canvas id="route" aria-hidden="true"></canvas>
+      <div id="featuredCards"></div>
+    </div>
+  </section>
+  <section id="archive" class="archive shell">
+    <div class="archive-head">
+      <div><p class="eyebrow">THE ARCHIVE</p><h2>全部作品</h2></div>
+      <div id="filters" class="filters" aria-label="作品类型">
+        <button type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button type="button" data-filter="project" aria-pressed="false">项目</button>
+        <button type="button" data-filter="study" aria-pressed="false">交互片段</button>
+        <button type="button" data-filter="result" aria-pressed="false">成果展示</button>
+      </div>
+    </div>
+    <div class="grid" id="cards"></div>
+  </section>
+</main>
+<footer class="shell"><span>在途 / 汽车交互作品库</span><a href="#">回到顶部 ↑</a></footer>
+<dialog id="detail" aria-labelledby="detailTitle">
+  <header class="dialog-header"><button class="pill" id="back" type="button" autofocus>← 返回作品库</button></header>
+  <div id="detailBody"></div>
+</dialog>
+<template id="handover">
+  <div class="lab">
+    <div class="lab-controls">
+      <fieldset><legend>提示方案</legend><label><input type="radio" name="cue" value="visual" checked><span>视觉提示</span></label><label><input type="radio" name="cue" value="layered"><span>分层提示</span></label></fieldset>
+      <button type="button" class="pill primary" data-action="start">开始场景</button>
+    </div>
+    <div class="instrument">
+      <canvas data-canvas="road" width="900" height="360" aria-hidden="true"></canvas>
+      <div class="instrument-top"><span class="system-label" data-system>领航辅助 · 模拟</span><b>64 <small>km/h</small></b></div>
+      <div class="warning" data-warning hidden><span>▲</span><div><strong>请接管车辆</strong><small data-warning-cause></small></div></div>
+      <div class="instrument-bottom"><span data-time>等待开始</span><button type="button" class="pill" data-action="takeover" disabled>确认接管</button></div>
+    </div>
+    <div class="result-line" aria-live="polite" data-result>先选择方案，开始后等待接管提示出现。</div>
+    <dl class="comparison"><div><dt>视觉提示</dt><dd data-best="visual">未完成</dd></div><div><dt>分层提示</dt><dd data-best="layered">未完成</dd></div></dl>
+    <p class="lab-note">分层提示增加原因和操作指引，浏览器支持时会播放一声轻提示。用时从提示出现到点击确认，为本次模拟值。</p>
+  </div>
+</template>
+<template id="climate">
+  <div class="lab">
+    <div class="climate-board">
+      <div class="instrument-top"><span class="system-label">空调 · 风向</span><b>22<small>°C</small></b></div>
+      <canvas data-canvas="air" width="900" height="370" aria-label="风向画布，拖动调整。也可以使用下方滑块。"></canvas>
+      <p class="air-hint">在画面中拖动气流落点</p>
+    </div>
+    <div class="air-controls">
+      <label>水平 <output data-value="x">0°</output><input data-axis="x" type="range" min="-35" max="35" value="0"></label>
+      <label>垂直 <output data-value="y">0°</output><input data-axis="y" type="range" min="-28" max="28" value="0"></label>
+      <label>风量 <output data-value="power">3</output><input data-axis="power" type="range" min="1" max="5" value="3"></label>
+    </div>
+    <div class="controls-row"><button class="pill" data-preset="face" type="button">吹向面部</button><button class="pill" data-preset="feet" type="button">吹向脚部</button><button class="pill" data-preset="reset" type="button">复位</button></div>
+    <p class="lab-note">气流是示意，拖动与滑块共用一套状态。</p>
+  </div>
+</template>
+<template id="gesture">
+  <div class="lab">
+    <div class="lab-controls">
+      <fieldset><legend>模拟识别结果</legend><label><input type="radio" name="gesture" value="certain" checked><span>高置信度</span></label><label><input type="radio" name="gesture" value="uncertain"><span>低置信度</span></label><label><input type="radio" name="gesture" value="lost"><span>未识别</span></label></fieldset>
+      <button class="pill primary" data-action="simulate" type="button">模拟挥手</button>
+    </div>
+    <div class="gesture-board">
+      <div class="gesture-sensor" aria-hidden="true"><div class="orbit"></div><div class="orbit"></div><div class="orbit"></div><span>✳</span></div>
+      <div class="player"><p class="system-label">MEDIA PLAYER</p><strong data-track>01 / 夜间电台</strong><div class="wavebars" aria-hidden="true"></div><p data-status aria-live="polite">等待手势。</p>
+        <div class="controls-row" data-gesture-actions hidden><button type="button" class="pill primary" data-action="confirm">确认换歌</button><button type="button" class="pill" data-action="cancel">取消</button></div>
+        <button type="button" class="pill" data-action="undo" hidden>撤销换歌</button>
+      </div>
+    </div>
+    <p class="lab-note">识别结果由按钮模拟。高置信度执行后可撤销，低置信度先确认，未识别时保留当前状态。</p>
+  </div>
+</template>
+</body>
+</html>
