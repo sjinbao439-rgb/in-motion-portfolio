@@ -1,0 +1,40 @@
+name: Publish portfolio to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Assemble website
+        run: |
+          mkdir site
+          cp index.html style.css app.js content.js site/
+          if [ -d assets ]; then cp -R assets site/; fi
+          unzip -q road-dna-core.zip -d site
+          unzip -q road-dna-gesture.zip -d site
+          test -s site/road-dna/index.html
+          test -s site/road-dna/sound-lab.html
+          test -s site/road-dna/gesture/gesture_recognizer.task
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v5
